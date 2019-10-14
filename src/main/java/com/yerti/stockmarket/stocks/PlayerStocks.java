@@ -6,11 +6,8 @@ import com.yerti.stockmarket.StockMarket;
 import com.yerti.stockmarket.messages.Message;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 
 import java.sql.PreparedStatement;
@@ -20,6 +17,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 import java.util.logging.Level;
 
 public class PlayerStocks {
@@ -27,7 +25,7 @@ public class PlayerStocks {
 	private Player player;
 	private HashMap<String, PlayerStock> stocks = new HashMap<String, PlayerStock>();
 	private boolean exists;
-	private String playerName;
+	private UUID playerID;
 	private static Plugin plugin;
 
 	public PlayerStocks (Plugin plugin) {
@@ -37,16 +35,16 @@ public class PlayerStocks {
 	public PlayerStocks (Player player) {
 		this.player = player;
 		if (player != null)
-			this.playerName = player.getName();
+			this.playerID = player.getUniqueId();
 		else
-			this.playerName = "";
+			this.playerID = UUID.fromString("");
 		
 		exists = getPlayerInfo();
 	}
 	
-	public PlayerStocks (String playerName) {
+	public PlayerStocks (UUID playerName) {
 		this.player = null;
-		this.playerName = playerName;
+		this.playerID = playerName;
 		
 		exists = getPlayerInfo();
 	}
@@ -58,7 +56,7 @@ public class PlayerStocks {
 			// NOW LETS FIND EM
 			PreparedStatement stmt = mysql.prepareStatement("SELECT * FROM players WHERE name LIKE ? ");
 			try {
-				stmt.setString(1, playerName);
+				stmt.setString(1, playerID.toString());
 			} catch (SQLException e1) {
 				e1.printStackTrace();
 			}
@@ -95,7 +93,7 @@ public class PlayerStocks {
 
 			stmt = mysql.prepareStatement("INSERT INTO players (name) Values(?)");
 			try {
-				stmt.setString(1, playerName);
+				stmt.setString(1, playerID.toString());
 			} catch (SQLException e1) {
 				e1.printStackTrace();
 			}
@@ -131,7 +129,7 @@ public class PlayerStocks {
 					PreparedStatement stmt = mysql.prepareStatement("UPDATE players SET " + stock.getID() + " = ? WHERE name LIKE ?");
 					try {
 						stmt.setInt(1, this.stocks.get(stock.getID()).amount);
-						stmt.setString(2, player.getName());
+						stmt.setString(2, player.getUniqueId().toString());
 					} catch (SQLException e) {
 						e.printStackTrace();
 					}
@@ -200,7 +198,7 @@ public class PlayerStocks {
 					PreparedStatement stmt = mysql.prepareStatement("UPDATE players SET " + stock.getID() + " = ? WHERE name LIKE ?");
 					try {
 						stmt.setInt(1, this.stocks.get(stock.getID()).amount);
-						stmt.setString(2, player.getName());
+						stmt.setString(2, player.getUniqueId().toString());
 					} catch (SQLException e) {
 						e.printStackTrace();
 					}

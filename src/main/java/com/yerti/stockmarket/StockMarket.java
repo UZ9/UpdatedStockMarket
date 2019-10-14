@@ -89,8 +89,8 @@ public class StockMarket extends JavaPlugin {
         e = new StockMarketEventThread();
         e.start();
 
-        d = new StockMarketDividendThread(this);
-        d.start();
+        //d = new StockMarketDividendThread(this);
+        //d.start();
 
 
         //TODO: Redo this
@@ -206,7 +206,8 @@ public class StockMarket extends JavaPlugin {
 
     private void checkAPI() {
         //Check if BanditMaps shell is online
-        if (Bukkit.getPluginManager().isPluginEnabled("BanditMaps")) {
+        //Temporarily disabled
+        /*if (Bukkit.getPluginManager().isPluginEnabled("BanditMaps")) {
             StockPriceStorage storage = new StockPriceStorage(this);
             storage.savePlayersFile();
             new StockPriceStorageUpdater(this, storage.getPlayerConfig(), storage);
@@ -214,7 +215,7 @@ public class StockMarket extends JavaPlugin {
             log.info("[StockMarket] Successfully loaded BanditMaps API");
         } else {
             log.info("[StockMarket] Graphs disabled, BanditMaps API not found.");
-        }
+        }*/
 
         if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
             log.info("[StockMarket] Found PlaceholderAPI, adding placeholder.");
