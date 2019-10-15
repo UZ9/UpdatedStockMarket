@@ -160,7 +160,7 @@ public class MenuListStock implements IInventory {
                     playerStocks.buy(stock, amountToBuy);
                     event.setCancelled(true);
                     //Give 3 ticks for mysql in async thread to be written
-                    //Bukkit.getScheduler().runTaskLater(plugin, runnable, 3L);
+                    Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, runnable, 3L);
                     return;
                     
                 }
@@ -175,7 +175,7 @@ public class MenuListStock implements IInventory {
 
                     event.setCancelled(true);
                     //Give 3 ticks for mysql in async thread to be written
-                    //Bukkit.getScheduler().runTaskLater(plugin, runnable, 3L);
+                    Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, runnable, 3L);
                     return;
                 }
 

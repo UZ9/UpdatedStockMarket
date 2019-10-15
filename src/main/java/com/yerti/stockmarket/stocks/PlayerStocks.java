@@ -173,7 +173,7 @@ public class PlayerStocks {
 		}
 
 		if (stock.exists()) {
-			if ((stock.getAmount() >= amount) || stock.getAmount() == 1 || stock.getAmount() == 0) {
+			if ((stock.getAmount() >= amount) || stock.getAmount() == 1) {
 
 				if (!StockMarket.economy.has(player, stock.getPrice() * amount)) {
 					m.errorMessage("Not enough money!");
