@@ -160,7 +160,7 @@ public class Stock {
 
 			PreparedStatement stmt;
 
-			stmt = mySQL.prepareStatement("UPDATE stocks SET lastPercent = ? WHERE stockID = ?");
+			stmt = mySQL.prepareStatement("UPDATE stocks SET lastPercent = ? WHERE StockID = ?");
 			try {
 				stmt.setDouble(1, lastPercent);
 				stmt.setString(2, getID());
@@ -195,7 +195,7 @@ public class Stock {
 
 			PreparedStatement stmt;
 			if (getPrice() + amount > getMaxPrice()) {
-				stmt = mysql.prepareStatement("UPDATE stocks SET price = ? WHERE stockID = ?");
+				stmt = mysql.prepareStatement("UPDATE stocks SET price = ? WHERE StockID = ?");
 				try {
 					stmt.setLong(1, getMaxPrice());
 					stmt.setString(2, getID());
@@ -203,7 +203,7 @@ public class Stock {
 					e.printStackTrace();
 				}
 			} else if (getPrice() + amount < getMinPrice()) {
-				stmt = mysql.prepareStatement("UPDATE stocks SET price = ? WHERE stockID = ?");
+				stmt = mysql.prepareStatement("UPDATE stocks SET price = ? WHERE StockID = ?");
 				try {
 					stmt.setLong(1, getMinPrice());
 					stmt.setString(2, getID());
