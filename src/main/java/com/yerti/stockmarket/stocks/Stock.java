@@ -211,9 +211,9 @@ public class Stock {
 					e.printStackTrace();
 				}
 			} else {
-				stmt = mysql.prepareStatement("UPDATE stocks SET price = price + ? WHERE stockID = ?");
+				stmt = mysql.prepareStatement("UPDATE stocks SET price = price + ? WHERE StockID = ?");
 				try {
-					stmt.setDouble(1, amount);
+					stmt.setLong(1, amount);
 					stmt.setString(2, getID());
 				} catch (SQLException e) {
 					e.printStackTrace();
