@@ -3,8 +3,10 @@ package com.yerti.stockmarket.events;
 
 import com.yerti.stockmarket.StockMarket;
 import com.yerti.stockmarket.stocks.Stock;
+import net.minecraft.server.v1_8_R3.IPlayerFileData;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 
 import java.util.Iterator;
 import java.util.Random;
@@ -51,21 +53,20 @@ public class EventInstance {
 		Random rand = new Random();
 		boolean val = rand.nextInt(30)==0;
 
-		long newPrice = s.updatePrice(e.getUp(), e.getScalar());
+		long newPrice = s.updatePrice(e.getUp(), val ? e.getScalar() * 1.5 : e.getScalar());
 
 		if (val) {
-			newPrice *= 12;
-			broadcastMessage(e.getMessage().replace("%s", s.getName()));
+			for (Player player : Bukkit.getOnlinePlayers()) {
+				if (!StockMarket.getInstance().toggledUsers.contains(player.getUniqueId())) {
+					player.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "STOCK " + ChatColor.DARK_GRAY + "\u00BB " + ChatColor.DARK_GREEN + e.getMessage().replace("%s",s.getName()));
+				}
+			}
 		}
+
+
 
 		double percentIncrease = (newPrice / (s.getPrice() / 100.));
 
-		//900 - 1000
-
-
-
-		//
-		//
 
 		s.setLastPercent(percentIncrease);
 		s.changePrice(newPrice);
@@ -75,11 +76,6 @@ public class EventInstance {
 
 		return true;
 	}
-	
-	private void broadcastMessage (String message) {
-		if (StockMarket.broadcastEvents)
 
-			Bukkit.getServer().broadcastMessage(ChatColor.RED + "" + ChatColor.BOLD + "STOCK " + ChatColor.DARK_GRAY + "\u00BB " + ChatColor.DARK_GREEN + message);
-	}
 	
 }

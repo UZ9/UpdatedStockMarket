@@ -2,6 +2,7 @@ package com.yerti.stockmarket;
 
 import com.yerti.stockmarket.api.StockMarketAPI;
 import com.yerti.stockmarket.core.inventories.InventoryHandler;
+import com.yerti.stockmarket.core.utils.EmailSender;
 import com.yerti.stockmarket.events.Event;
 import com.yerti.stockmarket.graphs.StockGraph;
 import com.yerti.stockmarket.graphs.StockPriceStorage;
@@ -16,13 +17,15 @@ import com.yerti.stockmarket.threads.StockMarketEventThread;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.Vector;
+import java.sql.Timestamp;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -32,11 +35,11 @@ public class StockMarket extends JavaPlugin {
     public static Vector<Event> events = new Vector<>();
     public static Permission permission = null;
     public static Economy economy = null;
-    static String mysqlIP = "localhost";
-    static String mysqlPort = "3306";
-    static String mysqlDB = "sm";
-    static String mysqlUser = "root";
-    static String mysqlPW = "";
+    public static String mysqlIP = "localhost";
+    public static String mysqlPort = "3306";
+    public static String mysqlDB = "sm";
+    public static String mysqlUser = "root";
+    public static String mysqlPW = "";
     public static int randomEventFreq = 60;
     public static int maxPerPlayer = 250;
     public static int maxPerPlayerPerStock = 50;
@@ -45,18 +48,28 @@ public class StockMarket extends JavaPlugin {
     private Logger log = Logger.getLogger("StockMarket");
     private StockMarketEventThread e;
     private StockMarketDividendThread d;
+    private static StockMarket instance;
+    public List<UUID> toggledUsers;
 
     public void onDisable() {
+
+        if (toggledUsers != null)
+        getConfig().set("toggled-users", toggledUsers);
+
+        //new EmailSender("banditautomaticpinging@gmail.com", "mJHZYEfnK4Anj6q", "privatetestingemailforthings@gmail.com")
+                //.sendMail("banditautomaticpinging@gmail.com", "StockMarket", "StockMarket has been disabled (" + new Date().toString() + ")");
+
         try {
             e.finish();
             d.finish();
+
         } catch (NullPointerException e) {
             log.info("[StockMarket] No cleanup required as event threads never started.");
         }
     }
 
-    public Plugin getInstance() {
-        return this;
+    public static StockMarket getInstance() {
+        return instance;
     }
 
     private void disablePlugin() {
@@ -64,9 +77,14 @@ public class StockMarket extends JavaPlugin {
     }
 
     public void onEnable() {
+        instance = this;
 
         checkAPI();
         setupVault();
+
+        toggledUsers = new ArrayList<>();
+        List<String> toggles = getConfig().getStringList("toggled-users");
+        toggles.forEach(e -> toggledUsers.add(UUID.fromString(e)));
 
         Bukkit.getPluginManager().registerEvents(new InventoryHandler(), this);
 
@@ -161,7 +179,9 @@ public class StockMarket extends JavaPlugin {
         commands.add(new Command("set", "Sets all the values of the given stock to the new specified values. Does not affect the current price.", "<stockID> <newBasePrice> <newMaxPrice> <newMinPrice> <newVolatility> <newAmount> <newDividend> <newStockName>", "stockMarket.admin.set"));
         commands.add(new Command("reload", "Reloads the StockMarket config.", "", "stockMarket.admin.reload"));
         commands.add(new Command("forcerandom", "Forces a random event to occur on a random stock.", "", "stockMarket.admin.event"));
-        commands.add(new Command("", "Displays more info about stock requested.", "<stockID>", "stockMarket.user.detail"));
+        commands.add(new Command("stock", "Displays more info about stock requested.", "<stockID>", "stockMarket.user.detail"));
+        commands.add(new Command("togglechat", "Toggles whether special stock events are sent to the player.", "", ""));
+
     }
 
     private Boolean setupPermissions() {

@@ -4,6 +4,7 @@ package com.yerti.stockmarket.stocks;
 import com.yerti.stockmarket.MySQL;
 import com.yerti.stockmarket.StockMarket;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.sql.PreparedStatement;
@@ -11,6 +12,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class Stock {
 
@@ -229,17 +231,22 @@ public class Stock {
 	}
 	
 	public long updatePrice(boolean up, double scalar) {
-		long d = 0;
-		Random random = new Random();
-		double a = random.nextDouble();
+		long d;
+		double a = ThreadLocalRandom.current().nextDouble(0.01, 0.5);
+
 		
 		if (up) {
-			d = (long) ((getVolatility() / 100) * (a * (scalar * .01) * (getBasePrice() + 1)));
+			//
+			d = (long) (price * (1 + a) * volatility * scalar * 0.0001);
+			//d = (long) (basePrice / price * a * (1. + (a * .25)) * volatility * scalar);
+			//d = (long) ((getVolatility() / 100.) * (a * (scalar * .01) * Math.log(getBasePrice() + 1) / Math.log(1.01)));
 
 		} else {
-			d = (-1) * (long) ((getVolatility() / 100) * (a * (scalar * .01) * (getBasePrice() + 1)));
+			d = -1 * (long) (price * (1 + a) * volatility * scalar * 0.0001);
+			//d = (-1) * (long) ((getVolatility() / 100.) * (a * (scalar * .01) * Math.log(getBasePrice() + 1) / Math.log(1.001)));
 
 		}
+
 
 		return d;
 	}
