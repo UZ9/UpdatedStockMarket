@@ -1,5 +1,7 @@
 package com.yerti.stockmarket;
 
+import org.bukkit.Bukkit;
+
 import java.sql.*;
 
 public class MySQL {
@@ -43,7 +45,10 @@ public class MySQL {
                 e.printStackTrace();
             }
             dbstatus = false;
+
         }
+
+
     }
 
     public void throwSQLException(SQLException e, String msg) {

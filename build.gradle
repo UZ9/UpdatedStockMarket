@@ -26,11 +26,15 @@ repositories {
         name = 'placeholderapi'
         url = 'http://repo.extendedclip.com/content/repositories/placeholderapi/'
     }
+
+    maven {
+        url = "https://mvnrepository.com/artifact/javax.mail/mail"
+    }
 }
 
 dependencies {
     compile files("./src/main/resources/xchart-3.5.4.jar")
-
+    compile group: 'javax.mail', name: 'mail', version: '1.4'
     compileOnly "org.bukkit:craftbukkit:1.8.8-R0.1-SNAPSHOT"
     compileOnly "com.github.MilkBowl:VaultAPI:1.7"
     compileOnly "me.clip:placeholderapi:2.10.3"
