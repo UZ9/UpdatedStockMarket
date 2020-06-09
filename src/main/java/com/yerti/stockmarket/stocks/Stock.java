@@ -26,18 +26,32 @@ public class Stock {
 	private double lastPercent;
 	private int amount;
 	private double dividend;
+	private MySQL mysql;
 	
 	private boolean exists;
-	
+
+
+	public Stock(String name, String stockID, long price, long basePrice, long maxPrice, long minPrice, double volatility, double lastPercent, int amount) {
+		this.name = name;
+		this.stockID = stockID;
+		this.price = price;
+		this.basePrice = basePrice;
+		this.maxPrice = maxPrice;
+		this.minPrice = minPrice;
+		this.volatility = volatility;
+		this.lastPercent = lastPercent;
+		this.amount = amount;
+		this.mysql = StockMarket.getMySQL();
+	}
+
 	public Stock (String name) {
 		this.stockID = name;
+		this.mysql = StockMarket.getMySQL();
 		
 		exists = getInfo();
 	}
 	
 	private boolean getInfo () {
-		// FIND THIS STOCK IN THE DB IF IT EXISTS
-		MySQL mysql = new MySQL();
 		
 		PreparedStatement stmt = mysql.prepareStatement("SELECT * FROM stocks WHERE stockID LIKE ? ");
 		try {
@@ -72,7 +86,6 @@ public class Stock {
 	}
 	
 	public boolean add (String name, String stockID, long baseprice, long maxprice, long minprice, double volatility, int amount, double dividend, double lastPercent) {
-		MySQL mysql = new MySQL();
 		try {
 			mysql.execute("ALTER TABLE players ADD COLUMN " + stockID + " INT DEFAULT 0");
 		} catch (SQLException e) {
@@ -104,8 +117,7 @@ public class Stock {
 	
 	public boolean set (String name, String stockID, long baseprice, long maxprice, long minprice, double volatility, int amount, double dividend, double lastPercent) {
 
-		Bukkit.getScheduler().runTaskAsynchronously(JavaPlugin.getPlugin(StockMarket.class).getInstance(), () -> {
-			MySQL mysql = new MySQL();
+		Bukkit.getScheduler().runTaskAsynchronously(StockMarket.getInstance(), () -> {
 
 			PreparedStatement stmt = mysql.prepareStatement("UPDATE stocks SET name = ?, basePrice = ?, maxPrice = ?, minPrice = ?, volatility = ?, amount = ?, lastPercent = ?, dividend = ? WHERE StockID LIKE ?");
 			try {
@@ -130,8 +142,7 @@ public class Stock {
 	
 	public boolean remove () {
 
-		Bukkit.getScheduler().runTaskAsynchronously(JavaPlugin.getPlugin(StockMarket.class).getInstance(), () -> {
-			MySQL mysql = new MySQL();
+		Bukkit.getScheduler().runTaskAsynchronously(StockMarket.getInstance(), () -> {
 
 			try {
 				mysql.execute("ALTER TABLE players DROP COLUMN " + stockID);
@@ -156,13 +167,11 @@ public class Stock {
 
 	public boolean setLastPercent(double lastPercent) {
 
-		Bukkit.getScheduler().runTaskAsynchronously(JavaPlugin.getPlugin(StockMarket.class).getInstance(), () -> {
-
-			MySQL mySQL = new MySQL();
+		Bukkit.getScheduler().runTaskAsynchronously(StockMarket.getInstance(), () -> {
 
 			PreparedStatement stmt;
 
-			stmt = mySQL.prepareStatement("UPDATE stocks SET lastPercent = ? WHERE StockID = ?");
+			stmt = mysql.prepareStatement("UPDATE stocks SET lastPercent = ? WHERE StockID = ?");
 			try {
 				stmt.setDouble(1, lastPercent);
 				stmt.setString(2, getID());
@@ -171,8 +180,8 @@ public class Stock {
 			}
 
 
-			mySQL.execute(stmt);
-			mySQL.close();
+			mysql.execute(stmt);
+			mysql.close();
 		});
 
 		this.lastPercent = lastPercent;
@@ -188,12 +197,11 @@ public class Stock {
 	
 	public boolean changePrice (long amount) {
 
-		Bukkit.getScheduler().runTaskAsynchronously(JavaPlugin.getPlugin(StockMarket.class).getInstance(), () -> {
-			MySQL mysql = new MySQL();
+		Bukkit.getScheduler().runTaskAsynchronously(StockMarket.getInstance(), () -> {
 
 			DecimalFormat newFormat = new DecimalFormat("#.##");
 
-			setAmount(Double.valueOf(newFormat.format(amount)));
+			setAmount(Double.parseDouble(newFormat.format(amount)));
 
 			PreparedStatement stmt;
 			if (getPrice() + amount > getMaxPrice()) {

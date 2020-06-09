@@ -169,8 +169,6 @@ public class MenuListStock implements IInventory {
 
                     int amountToBuy = event.isShiftClick() ? 10 : 1;
 
-                    if (event.isShiftClick() && event.getClick )
-
                     PlayerStocks playerStocks = new PlayerStocks(player);
                     playerStocks.buy(stock, amountToBuy);
                     event.setCancelled(true);

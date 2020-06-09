@@ -2,29 +2,21 @@ package com.yerti.stockmarket;
 
 import com.yerti.stockmarket.api.StockMarketAPI;
 import com.yerti.stockmarket.core.inventories.InventoryHandler;
-import com.yerti.stockmarket.core.utils.EmailSender;
 import com.yerti.stockmarket.events.Event;
-import com.yerti.stockmarket.graphs.StockGraph;
-import com.yerti.stockmarket.graphs.StockPriceStorage;
-import com.yerti.stockmarket.graphs.StockPriceStorageUpdater;
 import com.yerti.stockmarket.menus.MenuListStock;
 import com.yerti.stockmarket.messages.Command;
 import com.yerti.stockmarket.placeholders.StockPlaceholder;
 import com.yerti.stockmarket.stocks.PlayerStocks;
 import com.yerti.stockmarket.stocks.Stock;
-import com.yerti.stockmarket.threads.StockMarketDividendThread;
 import com.yerti.stockmarket.threads.StockMarketEventThread;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -35,20 +27,17 @@ public class StockMarket extends JavaPlugin {
     public static Vector<Event> events = new Vector<>();
     public static Permission permission = null;
     public static Economy economy = null;
-    public static String mysqlIP = "localhost";
-    public static String mysqlPort = "3306";
-    public static String mysqlDB = "sm";
-    public static String mysqlUser = "root";
-    public static String mysqlPW = "";
     public static int randomEventFreq = 60;
     public static int maxPerPlayer = 250;
     public static int maxPerPlayerPerStock = 50;
     public static boolean broadcastEvents = true;
-    static boolean debugMode = false;
+    public static boolean debugMode = false;
     private Logger log = Logger.getLogger("StockMarket");
     private StockMarketEventThread e;
-    private StockMarketDividendThread d;
+
+    //INSTANCES
     private static StockMarket instance;
+    private static MySQL mySQL;
     public List<UUID> toggledUsers;
 
     public void onDisable() {
@@ -61,8 +50,6 @@ public class StockMarket extends JavaPlugin {
 
         try {
             e.finish();
-            d.finish();
-
         } catch (NullPointerException e) {
             log.info("[StockMarket] No cleanup required as event threads never started.");
         }
@@ -107,31 +94,6 @@ public class StockMarket extends JavaPlugin {
         e = new StockMarketEventThread();
         e.start();
 
-        //d = new StockMarketDividendThread(this);
-        //d.start();
-
-
-        //TODO: Redo this
-        for (Stock stock : StockMarketAPI.retrieveStocks()) {
-            Bukkit.getLogger().log(Level.INFO, "Found " + stock.getName());
-            if (stock.getID().equalsIgnoreCase("BigBank")) {
-                Bukkit.getLogger().log(Level.INFO,  "Found " + stock.getName() + " at -1, setting to 1..");
-                MySQL mysql = new MySQL();
-                PreparedStatement stmt;
-                stmt = mysql.prepareStatement("UPDATE stocks SET amount = ? WHERE StockID LIKE ?");
-                try {
-                    stmt.setInt(1, 1);
-                    stmt.setString(2, stock.getID());
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-
-                mysql.execute(stmt);
-
-                mysql.close();
-            }
-        }
-
         //new StockGraph(null).generateGraph();
 
     }
@@ -140,11 +102,7 @@ public class StockMarket extends JavaPlugin {
         getConfig().options().copyDefaults(true);
         saveConfig();
 
-        mysqlIP = getConfig().getString("mysql.ip");
-        mysqlPort = getConfig().getString("mysql.port");
-        mysqlDB = getConfig().getString("mysql.database");
-        mysqlUser = getConfig().getString("mysql.username");
-        mysqlPW = getConfig().getString("mysql.password");
+
 
         randomEventFreq = getConfig().getInt("random-event-frequency");
         maxPerPlayer = getConfig().getInt("max-total-stocks-per-player");
@@ -202,7 +160,7 @@ public class StockMarket extends JavaPlugin {
     }
 
     private Boolean verifyDatabase() {
-        new MySQL();
+        mySQL = new MySQL(this);
 
         return MySQL.dbstatus;
     }
@@ -220,7 +178,6 @@ public class StockMarket extends JavaPlugin {
         } else {
             log.severe("[StockMarket] Permissions plugin not detected!");
             this.disablePlugin();
-            return;
         }
     }
 
@@ -243,5 +200,9 @@ public class StockMarket extends JavaPlugin {
         } else {
             log.info("[StockMarket] PlaceholderAPI not found, disabling placeholder.");
         }
+    }
+
+    public static MySQL getMySQL() {
+        return mySQL;
     }
 }

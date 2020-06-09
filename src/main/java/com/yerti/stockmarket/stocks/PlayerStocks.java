@@ -26,6 +26,7 @@ public class PlayerStocks {
 	private HashMap<String, PlayerStock> stocks = new HashMap<String, PlayerStock>();
 	private boolean exists;
 	private UUID playerID;
+	private MySQL mysql;
 	private static Plugin plugin;
 
 	public PlayerStocks (Plugin plugin) {
@@ -40,6 +41,7 @@ public class PlayerStocks {
 			this.playerID = UUID.fromString("");
 		
 		exists = getPlayerInfo();
+		mysql = StockMarket.getMySQL();
 	}
 	
 	public PlayerStocks (UUID playerName) {
@@ -50,10 +52,6 @@ public class PlayerStocks {
 	}
 	
 	private boolean getPlayerInfo() {
-			// FIND THIS PLAYER IN THE DB, FILL IN HIS INFO
-			MySQL mysql = new MySQL();
-
-			// NOW LETS FIND EM
 			PreparedStatement stmt = mysql.prepareStatement("SELECT * FROM players WHERE name LIKE ? ");
 			try {
 				stmt.setString(1, playerID.toString());
@@ -125,7 +123,6 @@ public class PlayerStocks {
 				this.stocks.get(stock.getID()).amount -= amount;
 
 				Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-					MySQL mysql = new MySQL();
 					PreparedStatement stmt = mysql.prepareStatement("UPDATE players SET " + stock.getID() + " = ? WHERE name LIKE ?");
 					try {
 						stmt.setInt(1, this.stocks.get(stock.getID()).amount);
@@ -194,7 +191,6 @@ public class PlayerStocks {
 
 				//Moved MySQL to async task (a lot faster now)
 				Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-					MySQL mysql = new MySQL();
 					PreparedStatement stmt = mysql.prepareStatement("UPDATE players SET " + stock.getID() + " = ? WHERE name LIKE ?");
 					try {
 						stmt.setInt(1, this.stocks.get(stock.getID()).amount);

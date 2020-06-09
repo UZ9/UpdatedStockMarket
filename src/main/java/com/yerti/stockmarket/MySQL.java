@@ -1,6 +1,7 @@
 package com.yerti.stockmarket;
 
 import org.bukkit.Bukkit;
+import org.bukkit.plugin.Plugin;
 
 import java.sql.*;
 
@@ -9,11 +10,20 @@ public class MySQL {
     public static boolean dbstatus = true;
     private Connection con = null;
 
-    public MySQL() {
+    public MySQL(Plugin plugin) {
+
+        String mysqlIP = plugin.getConfig().getString("mysql.ip");
+        String mysqlPort = plugin.getConfig().getString("mysql.port");
+        String mysqlDB = plugin.getConfig().getString("mysql.database");
+        String mysqlUser = plugin.getConfig().getString("mysql.username");
+        String mysqlPW = plugin.getConfig().getString("mysql.password");
+
+
+
         final String driver = "com.mysql.jdbc.Driver";
-        String connection = "jdbc:mysql://" + StockMarket.mysqlIP + ":" + StockMarket.mysqlPort + "/" + StockMarket.mysqlDB;
-        final String user = StockMarket.mysqlUser;
-        final String password = StockMarket.mysqlPW;
+        String connection = "jdbc:mysql://" + mysqlIP + ":" + mysqlPort + "/" + mysqlDB;
+        final String user = mysqlUser;
+        final String password = mysqlPW;
 
         try {
             Class.forName(driver);
@@ -24,12 +34,12 @@ public class MySQL {
 
         } catch (SQLException e) {
             try {
-                connection = "jdbc:mysql://" + StockMarket.mysqlIP + ":" + StockMarket.mysqlPort;
+                connection = "jdbc:mysql://" + mysqlIP + ":" + mysqlPort;
                 con = DriverManager.getConnection(connection, user, password);
 
-                execute("CREATE DATABASE IF NOT EXISTS " + StockMarket.mysqlDB);
+                execute("CREATE DATABASE IF NOT EXISTS " + mysqlDB);
 
-                connection = "jdbc:mysql://" + StockMarket.mysqlIP + ":" + StockMarket.mysqlPort + "/" + StockMarket.mysqlDB;
+                connection = "jdbc:mysql://" + mysqlIP + ":" + mysqlPort + "/" + mysqlDB;
                 con = DriverManager.getConnection(connection, user, password);
 
                 setUpTables();
@@ -41,7 +51,7 @@ public class MySQL {
             //e.printStackTrace();
         } catch (ClassNotFoundException e) {
             System.out.println("[StockMarket] " + "SQL Drivers not installed. The server and java installation must support JDBC connections.");
-            if (StockMarket.debugMode == true) {
+            if (StockMarket.debugMode) {
                 e.printStackTrace();
             }
             dbstatus = false;
@@ -55,13 +65,14 @@ public class MySQL {
         if (msg != null) {
             System.out.println("[StockMarket] " + msg);
         }
-        if (StockMarket.debugMode == true) {
+        if (StockMarket.debugMode) {
             e.printStackTrace();
         }
     }
 
     private void setUpTables() {
         try {
+            execute("CREATE TABLE IF NOT EXISTS transactions (id int NOT NULL AUTO_INCREMENT, PRIMARY KEY(id), name tinytext, stockID tinytext, quantity int, time tinytext");
             execute("CREATE TABLE IF NOT EXISTS stocks (id int NOT NULL AUTO_INCREMENT, PRIMARY KEY(id), name tinytext, stockID tinytext, price decimal(64, 2), basePrice decimal(64, 2), maxPrice decimal(64, 2), minPrice decimal(64, 2), volatility decimal(64, 2), amount int, lastPercent decimal(64, 2), dividend decimal(10, 2))");
             execute("CREATE TABLE IF NOT EXISTS players (id int NOT NULL AUTO_INCREMENT, PRIMARY KEY(id), name tinytext)");
             execute("CREATE TABLE IF NOT EXISTS looptime (looptime int NOT NULL DEFAULT 0, PRIMARY KEY(looptime), looptime2 int NOT NULL DEFAULT 0)");

@@ -2,6 +2,7 @@ package com.yerti.stockmarket.stocks;
 
 
 import com.yerti.stockmarket.MySQL;
+import com.yerti.stockmarket.StockMarket;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -16,7 +17,7 @@ public class Stocks {
 	
 	public Stocks () {
 		// WE FOUND IT, STORE SOME INFO
-		MySQL mysql = new MySQL();
+		MySQL mysql = StockMarket.getMySQL();
 		
 		PreparedStatement stmt = mysql.prepareStatement("SELECT stockID FROM stocks");
 		ResultSet result = mysql.query(stmt);
