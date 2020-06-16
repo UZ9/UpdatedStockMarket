@@ -251,7 +251,7 @@ public class PlayerStocks {
 		return success;
 	}
 	
-	private int numTotal () {
+	public int numTotal() {
 		int total = 0;
 		for (PlayerStock ps : stocks.values()) {
 			total += ps.amount;

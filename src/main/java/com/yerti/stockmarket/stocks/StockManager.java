@@ -17,8 +17,7 @@ public class StockManager {
     public StockManager() {
         this.stocks = new ArrayList<>();
 
-
-
+        loadStocks();
     }
 
     public void loadStocks() {
@@ -73,6 +72,10 @@ public class StockManager {
 
     public List<Stock> getStocks() {
         return stocks;
+    }
+
+    public Stock getStock(String name) {
+        return stocks.stream().filter(s -> s.getID().equalsIgnoreCase(name)).findFirst().orElse(null);
     }
 
 

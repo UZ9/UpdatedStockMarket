@@ -30,6 +30,7 @@ repositories {
     maven {
         url = "https://mvnrepository.com/artifact/javax.mail/mail"
     }
+
 }
 
 dependencies {

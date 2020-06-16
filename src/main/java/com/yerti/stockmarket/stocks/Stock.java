@@ -306,6 +306,8 @@ public class Stock {
 	public int getAmount () {
 		return this.amount;
 	}
+
+	public void addAmount(int amount) { this.amount += amount; }
 	
 	public double getDividend () {
 		return this.dividend;

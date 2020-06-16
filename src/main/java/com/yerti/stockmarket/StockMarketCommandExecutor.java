@@ -214,7 +214,7 @@ public class StockMarketCommandExecutor implements CommandExecutor {
                     Bukkit.getLogger().log(Level.INFO, "Found " + stock.getName());
                     if (stock.getID().equalsIgnoreCase("BigBank")) {
                         Bukkit.getLogger().log(Level.INFO, "Found " + stock.getName() + " at -1, setting to 1..");
-                        MySQL mysql = new MySQL();
+                        MySQL mysql = new MySQL(plugin);
                         PreparedStatement stmt;
                         stmt = mysql.prepareStatement("UPDATE stocks SET amount = ? WHERE StockID LIKE ?");
                         try {

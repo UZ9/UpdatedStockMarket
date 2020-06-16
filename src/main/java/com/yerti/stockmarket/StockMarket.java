@@ -8,6 +8,8 @@ import com.yerti.stockmarket.messages.Command;
 import com.yerti.stockmarket.placeholders.StockPlaceholder;
 import com.yerti.stockmarket.stocks.PlayerStocks;
 import com.yerti.stockmarket.stocks.Stock;
+import com.yerti.stockmarket.stocks.StockManager;
+import com.yerti.stockmarket.stocks.StockTransactionManager;
 import com.yerti.stockmarket.threads.StockMarketEventThread;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
@@ -32,6 +34,8 @@ public class StockMarket extends JavaPlugin {
     public static int maxPerPlayerPerStock = 50;
     public static boolean broadcastEvents = true;
     public static boolean debugMode = false;
+    private StockTransactionManager transactionManager;
+    private StockManager stockManager;
     private Logger log = Logger.getLogger("StockMarket");
     private StockMarketEventThread e;
 
@@ -65,6 +69,9 @@ public class StockMarket extends JavaPlugin {
 
     public void onEnable() {
         instance = this;
+
+        this.stockManager = new StockManager();
+        this.transactionManager = new StockTransactionManager();
 
         checkAPI();
         setupVault();
@@ -204,5 +211,13 @@ public class StockMarket extends JavaPlugin {
 
     public static MySQL getMySQL() {
         return mySQL;
+    }
+
+    public StockTransactionManager getTransactionManager() {
+        return transactionManager;
+    }
+
+    public StockManager getStockManager() {
+        return stockManager;
     }
 }
