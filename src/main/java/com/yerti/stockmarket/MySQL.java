@@ -72,7 +72,7 @@ public class MySQL {
 
     private void setUpTables() {
         try {
-            execute("CREATE TABLE IF NOT EXISTS transactions (id int NOT NULL AUTO_INCREMENT, PRIMARY KEY(id), name tinytext, stockID tinytext, quantity int, time tinytext");
+            //execute("CREATE TABLE IF NOT EXISTS transactions (id int NOT NULL AUTO_INCREMENT, PRIMARY KEY(id), name tinytext, stockID tinytext, quantity int, time tinytext");
             execute("CREATE TABLE IF NOT EXISTS stocks (id int NOT NULL AUTO_INCREMENT, PRIMARY KEY(id), name tinytext, stockID tinytext, price decimal(64, 2), basePrice decimal(64, 2), maxPrice decimal(64, 2), minPrice decimal(64, 2), volatility decimal(64, 2), amount int, lastPercent decimal(64, 2), dividend decimal(10, 2))");
             execute("CREATE TABLE IF NOT EXISTS players (id int NOT NULL AUTO_INCREMENT, PRIMARY KEY(id), name tinytext)");
             execute("CREATE TABLE IF NOT EXISTS looptime (looptime int NOT NULL DEFAULT 0, PRIMARY KEY(looptime), looptime2 int NOT NULL DEFAULT 0)");

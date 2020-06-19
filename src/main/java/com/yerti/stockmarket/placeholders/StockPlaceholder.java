@@ -1,12 +1,10 @@
 package com.yerti.stockmarket.placeholders;
 
 
-import com.yerti.stockmarket.stocks.PlayerStock;
-import com.yerti.stockmarket.stocks.PlayerStocks;
+import com.yerti.stockmarket.StockMarket;
+import com.yerti.stockmarket.api.StockMarketAPI;
 import com.yerti.stockmarket.stocks.Stock;
-import com.yerti.stockmarket.stocks.Stocks;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.plugin.Plugin;
@@ -43,7 +41,7 @@ public class StockPlaceholder extends PlaceholderExpansion {
     @Override
     public String onRequest(OfflinePlayer player,  String identifier) {
         if (identifier.startsWith("stock_")) {
-            for (Stock stock : new PlayerStocks(player.getPlayer()).retrieveStocks()) {
+            for (Stock stock : StockMarket.getInstance().getStockManager().getStocks()) {
                 if (stock.getName().equalsIgnoreCase(identifier.substring(6))) {
                     double lastPercent = stock.getLastPercent();
                     String percentFormatted = lastPercent + "";
@@ -59,7 +57,7 @@ public class StockPlaceholder extends PlaceholderExpansion {
             }
         }
         if (identifier.equals("stock_list")) {
-            return new PlayerStocks(player.getPlayer()).retrieveFormattedStock();
+            return StockMarketAPI.retrieveFormattedStock();
         }
 
         return null;

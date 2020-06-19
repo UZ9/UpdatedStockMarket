@@ -1,14 +1,15 @@
 package com.yerti.stockmarket.threads;
 
 
+import com.yerti.stockmarket.api.StockMarketAPI;
 import com.yerti.stockmarket.events.EventInstance;
 import com.yerti.stockmarket.MySQL;
 import com.yerti.stockmarket.StockMarket;
 import com.yerti.stockmarket.stocks.Stock;
-import com.yerti.stockmarket.stocks.Stocks;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class StockMarketEventThread extends Thread {
 
@@ -18,7 +19,7 @@ public class StockMarketEventThread extends Thread {
 	public StockMarketEventThread (){
 		super ("StockMarketEventThread");
 		
-		MySQL mysql = new MySQL();
+		MySQL mysql = new MySQL(StockMarket.getInstance());
 		
 		ResultSet result = mysql.query("SELECT looptime FROM looptime");
 		
@@ -52,17 +53,11 @@ public class StockMarketEventThread extends Thread {
 				
 				if (loopTimes % StockMarket.randomEventFreq == 0) {
 					loopTimes = 0;
-					Stocks stocks = new Stocks();
-					
-					if (stocks.numStocks() > 0) {
-						for (Stock stock : stocks.getStocks()) {
-							EventInstance ei = new EventInstance();
-							ei.forceRandomEvent(stock);
-						}
-						//Stock stock = stocks.getRandomStock();
+					Stock randomStock = StockMarketAPI.retrieveStocks().get(ThreadLocalRandom.current().nextInt(0, StockMarketAPI.retrieveStocks().size()));
 
+					EventInstance ei = new EventInstance();
+					ei.forceRandomEvent(randomStock);
 
-					}
 				}
 			}
 		}
@@ -71,7 +66,7 @@ public class StockMarketEventThread extends Thread {
 	public void finish() {
 		loop = false;
 		
-		MySQL mysql = new MySQL();
+		MySQL mysql = new MySQL(StockMarket.getInstance());
 		
 		try {
 			mysql.execute("UPDATE looptime SET looptime = " + loopTimes);

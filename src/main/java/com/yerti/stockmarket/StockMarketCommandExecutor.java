@@ -5,11 +5,8 @@ import com.yerti.stockmarket.api.StockMarketAPI;
 import com.yerti.stockmarket.events.EventInstance;
 import com.yerti.stockmarket.menus.MenuListStock;
 import com.yerti.stockmarket.messages.Message;
-import com.yerti.stockmarket.stocks.PlayerStocks;
 import com.yerti.stockmarket.stocks.Stock;
-import com.yerti.stockmarket.stocks.Stocks;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -18,6 +15,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.logging.Level;
 
 public class StockMarketCommandExecutor implements CommandExecutor {
@@ -34,23 +32,23 @@ public class StockMarketCommandExecutor implements CommandExecutor {
         if (sender instanceof Player) {
             player = (Player) sender;
         } else {
-        	return false;
-		}
+            return false;
+        }
 
         Message m = new Message(player);
 
         if (command.getName().equalsIgnoreCase("sm") || command.getName().equalsIgnoreCase("stock")) {
             if (args.length == 1 && args[0].equalsIgnoreCase("togglechat")) {
-				if (plugin.toggledUsers.contains(player.getUniqueId())) {
-					plugin.toggledUsers.remove(player.getUniqueId());
-					new Message(player).successMessage("Turned on stock event messages.");
-				} else {
-					plugin.toggledUsers.add(player.getUniqueId());
-					new Message(player).successMessage("Turned off stock event messages.");
-				}
+                if (plugin.toggledUsers.contains(player.getUniqueId())) {
+                    plugin.toggledUsers.remove(player.getUniqueId());
+                    new Message(player).successMessage("Turned on stock event messages.");
+                } else {
+                    plugin.toggledUsers.add(player.getUniqueId());
+                    new Message(player).successMessage("Turned off stock event messages.");
+                }
 
 
-            	return true;
+                return true;
             } else if (args.length >= 1 && args[0].equalsIgnoreCase("help") && StockMarket.permission.has(player, "stockmarket.user.help")) {
                 int page = 1;
 
@@ -73,7 +71,7 @@ public class StockMarketCommandExecutor implements CommandExecutor {
                 //ps.listAll();
                 player.openInventory(new MenuListStock(player).getInventory());
             } else if (args.length >= 2 && args[0].equalsIgnoreCase("buy") && StockMarket.permission.has(player, "stockmarket.user.buy")) {
-                Stock stock = new Stock(args[1]);
+                Stock stock = StockMarket.getInstance().getStockManager().getStock(args[1]);
                 int amount = 1;
 
                 if (args.length == 3) {
@@ -86,13 +84,12 @@ public class StockMarketCommandExecutor implements CommandExecutor {
                 }
 
                 if (amount > 0) {
-                    PlayerStocks ps = new PlayerStocks(player);
-                    ps.buy(stock, amount);
+                    StockMarket.getInstance().getStockManager().buy(player, stock, amount);
                 } else {
                     m.errorMessage("Invalid amount.");
                 }
             } else if (args.length >= 2 && args[0].equalsIgnoreCase("sell") && StockMarket.permission.has(player, "stockmarket.user.sell")) {
-                Stock stock = new Stock(args[1]);
+                Stock stock = StockMarket.getInstance().getStockManager().getStock(args[1]);
                 int amount = 1;
 
                 if (args.length == 3) {
@@ -105,8 +102,7 @@ public class StockMarketCommandExecutor implements CommandExecutor {
                 }
 
                 if (amount > 0) {
-                    PlayerStocks ps = new PlayerStocks(player);
-                    ps.sell(stock, amount);
+                    StockMarket.getInstance().getStockManager().sell(player, stock, amount);
                 } else {
                     m.errorMessage("Invalid amount.");
                 }
@@ -142,10 +138,10 @@ public class StockMarketCommandExecutor implements CommandExecutor {
                     name += args[i];
                 }
 
-                Stock stock = new Stock(stockID);
+                Stock stock = StockMarket.getInstance().getStockManager().getStock(stockID);
 
                 if (!stock.exists()) {
-                    if (stock.add(name, stockID, baseprice, maxprice, minprice, volatility, amount, dividend, 0))
+                    if (StockMarket.getInstance().getStockManager().addStock(name, stockID, baseprice, maxprice, minprice, volatility, amount, dividend, 0))
                         m.successMessage("Successfully created new stock.");
                     else
                         m.errorMessage("Failed to create new stock.  Make sure the ID was valid.");
@@ -157,7 +153,7 @@ public class StockMarketCommandExecutor implements CommandExecutor {
             } else if (args.length == 2 && args[0].equalsIgnoreCase("remove") && StockMarket.permission.has(player, "stockmarket.admin.remove")) {
                 String stockID = args[1];
 
-                Stock stock = new Stock(stockID);
+                Stock stock = StockMarket.getInstance().getStockManager().getStock(args[1]);
 
                 if (stock.exists()) {
                     stock.remove();
@@ -198,7 +194,7 @@ public class StockMarketCommandExecutor implements CommandExecutor {
                     name += args[i];
                 }
 
-                Stock stock = new Stock(stockID);
+                Stock stock = StockMarket.getInstance().getStockManager().getStock(args[1]);
 
                 if (stock.set(name, stockID, baseprice, maxprice, minprice, volatility, amount, dividend, 0))
                     m.successMessage("Successfully adjusted stock.");
@@ -235,16 +231,15 @@ public class StockMarketCommandExecutor implements CommandExecutor {
                 m.regularMessage("Done!");
                 m.successMessage("Successfully reloaded StockMarket.");
             } else if (args.length == 1 && args[0].equalsIgnoreCase("forcerandom") && StockMarket.permission.has(player, "stockmarket.admin.event")) {
-                Stocks s = new Stocks();
-                if (s.numStocks() > 0) {
-                    EventInstance ei = new EventInstance();
-                    ei.forceRandomEvent(s.getRandomStock());
-                }
+
+                EventInstance ei = new EventInstance();
+                ei.forceRandomEvent(StockMarketAPI.retrieveStocks().get(ThreadLocalRandom.current().nextInt(StockMarketAPI.retrieveStocks().size())));
+
             } else if (args.length == 1 && StockMarket.permission.has(player, "stockmarket.user.detail")) {
                 // CHECK IF THIS IS A STOCK NAME
                 String stockID = args[0];
 
-                Stock stock = new Stock(stockID);
+                Stock stock = StockMarket.getInstance().getStockManager().getStock(args[1]);
 
                 if (stock.exists()) {
                     m.successMessage(stock.toString());
@@ -266,7 +261,6 @@ public class StockMarketCommandExecutor implements CommandExecutor {
                     return true;
                 }
             } else if (args.length > 0) {
-                // UNKNOWN COMMAND
                 m.unknownCommand();
             } else {
                 player.openInventory(new MenuListStock(player).getInventory());

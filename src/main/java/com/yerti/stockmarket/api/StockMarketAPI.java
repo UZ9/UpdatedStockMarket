@@ -1,8 +1,10 @@
 package com.yerti.stockmarket.api;
 
-import com.yerti.stockmarket.stocks.PlayerStocks;
+import com.yerti.stockmarket.StockMarket;
 import com.yerti.stockmarket.stocks.Stock;
+import org.bukkit.ChatColor;
 
+import java.text.DecimalFormat;
 import java.util.List;
 import java.util.UUID;
 
@@ -13,7 +15,40 @@ public class StockMarketAPI {
      * @return list of all current stocks
      */
     public static List<Stock> retrieveStocks() {
-        return new PlayerStocks(UUID.fromString("cacca09a-8bc0-4473-8e73-7f0be728637c")).retrieveStocks();
+        return StockMarket.getInstance().getStockManager().getStocks();
+    }
+
+    /**
+     * Returns a formatted message of the stocks
+     * @return
+     */
+    public static String retrieveFormattedStock() {
+
+        StringBuilder builder = new StringBuilder();
+
+        builder.append(ChatColor.DARK_GRAY + "" + ChatColor.STRIKETHROUGH + "----------------------\n");
+
+        DecimalFormat format = new DecimalFormat("#,###.#");
+
+        for (Stock stock : retrieveStocks()) {
+
+
+            double lastPercent = stock.getLastPercent();
+            String percentFormatted = lastPercent + "";
+
+            if (lastPercent < 0) {
+                percentFormatted = ChatColor.RED + percentFormatted + "%";
+            } else {
+                percentFormatted = ChatColor.GREEN + percentFormatted + "%";
+            }
+
+            builder.append(ChatColor.GREEN + stock.getName() + ChatColor.GRAY + " - " + ChatColor.RED + "$"  + stock.getPrice() + ChatColor.GRAY + " - " + percentFormatted + "\n");
+
+        }
+
+        builder.append(ChatColor.DARK_GRAY + "" + ChatColor.STRIKETHROUGH + "----------------------\n");
+
+        return builder.toString();
     }
 
 

@@ -61,6 +61,7 @@ task extractDependencies(type: Sync) {
 
 jar.dependsOn extractDependencies
 
+jar.destinationDir = file("C:\\Users\\chess\\Desktop\\Spigot 1.8\\plugins")
 
 
 
