@@ -76,7 +76,7 @@ public class MenuListStock implements IInventory {
             lore.add(ChatColor.DARK_GRAY + "\u00BB " + ChatColor.RED + StockMarket.getInstance().getStockManager().getStockAmount(player, stock));
             lore.add("");
             lore.add(ChatColor.GRAY + "Last Price Change:");
-            lore.add(ChatColor.DARK_GRAY + "\u00BB " + percentFormatted);
+            lore.add(ChatColor.DARK_GRAY + "\u00BB " + format.format(percentFormatted));
             lore.add("");
             lore.add(ChatColor.DARK_GRAY + "\u00BB " + ChatColor.GRAY + "S. Alt Click " + ChatColor.DARK_GRAY + "\u00BB "  + ChatColor.RED + "Buy 100");
             lore.add(ChatColor.DARK_GRAY + "\u00BB " + ChatColor.GRAY + "S. Left Click " + ChatColor.DARK_GRAY + "\u00BB " + ChatColor.RED + "Buy 10");
@@ -104,7 +104,7 @@ public class MenuListStock implements IInventory {
         List<ItemStack> itemStacks = new ArrayList<>(stockItems.keySet());
 
 
-        Collections.sort(itemStacks, Comparator.comparing(s -> s.getItemMeta().getDisplayName()));
+        itemStacks.sort(Comparator.comparing(s -> s.getItemMeta().getDisplayName()));
 
         CustomInventory inventory = new CustomInventory(this, 27, ChatColor.RED + "" + ChatColor.BOLD + "STOCK", new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 15));//)page.build();
 

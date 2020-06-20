@@ -130,10 +130,10 @@ public class Stock {
 
         DecimalFormat newFormat = new DecimalFormat("#.##");
 
-        setAmount(Double.parseDouble(newFormat.format(amount)));
+        //setAmount(Double.parseDouble(newFormat.format(amount)));
 
 
-        price = Math.max(minPrice, Math.min(maxPrice, price));
+        price = Math.max(minPrice, Math.min(maxPrice, amount));
 
 
         return true;
@@ -247,7 +247,7 @@ public class Stock {
 
     private void setAmount(double amount) {
         this.amount = (int) amount;
-    }
+    } //why is this double?
 
     public void addAmount(int amount) {
         this.amount += amount;

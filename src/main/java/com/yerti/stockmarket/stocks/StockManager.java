@@ -3,7 +3,6 @@ package com.yerti.stockmarket.stocks;
 import com.yerti.stockmarket.MySQL;
 import com.yerti.stockmarket.StockMarket;
 import com.yerti.stockmarket.messages.Message;
-import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
@@ -11,7 +10,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
-import java.util.logging.Level;
 
 public class StockManager {
 
@@ -66,10 +64,12 @@ public class StockManager {
             stmt.setString(1, player.getUniqueId().toString());
             ResultSet set = sql.query(stmt);
 
-            for (Stock stock : stocks) {
-                for (int i = 1; i <= set.getMetaData().getColumnCount(); i++) {
-                    if (set.getMetaData().getColumnName(i).equals(stock.getID())) {
-                        stockData.put(stock, set.getInt(i));
+            if (set.next()) {
+                for (Stock stock : stocks) {
+                    for (int i = 1; i <= set.getMetaData().getColumnCount(); i++) {
+                        if (set.getMetaData().getColumnName(i).equalsIgnoreCase(stock.getID())) {
+                            stockData.put(stock, set.getInt(i));
+                        }
                     }
                 }
             }
@@ -78,6 +78,13 @@ public class StockManager {
 
         } catch (SQLException e) {
             e.printStackTrace();
+        }
+
+        //couldn't find player
+        if (stockData.size() == 0) {
+            for (Stock stock : stocks) {
+                stockData.put(stock, 0);
+            }
         }
 
         System.out.println("Successfully loaded stock data for player " + player.getName());
@@ -112,6 +119,15 @@ public class StockManager {
         for (Map.Entry<UUID, Map<Stock, Integer>> player : storage.entrySet()) { //loop through all stock values
             for (Map.Entry<Stock, Integer> stockValue : player.getValue().entrySet()) { //loop through each stock value
                 //updates players to set <stockid> to its appropriate value where the name is the same as the uuid
+                PreparedStatement check = sql.prepareStatement("SELECT name FROM players WHERE name like ?");
+                check.setString(1, player.getKey().toString());
+                ResultSet resultSet = sql.query(check);
+                if (!resultSet.next()) {
+                    PreparedStatement stmt = sql.prepareStatement("INSERT INTO players (name) VALUES (?)");
+                    stmt.setString(1, player.getKey().toString());
+                    sql.execute(stmt);
+                }
+
                 PreparedStatement stmt = sql.prepareStatement("UPDATE players SET " + stockValue.getKey().getID() + " = ? WHERE name like ?");
 
 
@@ -119,6 +135,9 @@ public class StockManager {
                 stmt.setString(2, player.getKey().toString());
 
                 sql.execute(stmt);
+
+                check.close();
+                resultSet.close();;
             }
 
 
@@ -173,7 +192,7 @@ public class StockManager {
 
         int currentStockAmount = storage.get(player.getUniqueId()).getOrDefault(stock, 0);
 
-        if (stock.exists()) {
+        if (stock != null) {
 
             if (currentStockAmount - amount < 0) {
                 m.errorMessage("Failed to sell!  Check that you have that many!");
@@ -181,6 +200,7 @@ public class StockManager {
             }
 
             storage.get(player.getUniqueId()).put(stock, currentStockAmount - amount);
+            stock.addAmount(amount);
 
             StockMarket.economy.depositPlayer(player, amount * stock.getPrice());
             m.successMessage("Successfully sold " + amount + " " + stock + " stocks for " + stock.getPrice() + " " + StockMarket.economy.currencyNamePlural() + " each.");
@@ -197,12 +217,7 @@ public class StockManager {
 
         int currentStockAmount = storage.get(player.getUniqueId()).getOrDefault(stock, 0);
 
-        if (stock == null) {
-            Bukkit.getLogger().log(Level.SEVERE, "Stock was found null during purchase.");
-            return false;
-        }
-
-        if (stock.exists()) {
+        if (stock != null) {
             if ((stock.getAmount() >= amount) || stock.getAmount() == 1) {
 
                 if (!StockMarket.economy.has(player, stock.getPrice() * amount)) {
@@ -221,6 +236,7 @@ public class StockManager {
                 }
 
                 storage.get(player.getUniqueId()).put(stock, currentStockAmount + amount);
+                stock.addAmount(-amount);
 
                 StockMarket.economy.withdrawPlayer(player, amount * stock.getPrice());
                 m.successMessage("Successfully purchased " + amount + " " + stock + " stocks for " + stock.getPrice() + " " + StockMarket.economy.currencyNamePlural() + " each.");

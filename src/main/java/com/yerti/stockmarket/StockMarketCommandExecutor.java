@@ -140,7 +140,7 @@ public class StockMarketCommandExecutor implements CommandExecutor {
 
                 Stock stock = StockMarket.getInstance().getStockManager().getStock(stockID);
 
-                if (!stock.exists()) {
+                if (stock == null) {
                     if (StockMarket.getInstance().getStockManager().addStock(name, stockID, baseprice, maxprice, minprice, volatility, amount, dividend, 0))
                         m.successMessage("Successfully created new stock.");
                     else
