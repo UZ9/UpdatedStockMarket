@@ -102,6 +102,14 @@ public class StockMarket extends JavaPlugin {
         e = new StockMarketEventThread();
         e.start();
 
+        Bukkit.getScheduler().runTaskTimer(this, () -> {
+            try {
+                stockManager.saveStocks();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        }, 20L,20L * 60L * 5L); // 5 minutes
+
         //new StockGraph(null).generateGraph();
 
     }
