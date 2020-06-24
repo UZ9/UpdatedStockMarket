@@ -5,18 +5,19 @@ import com.yerti.stockmarket.events.Event;
 import com.yerti.stockmarket.menus.MenuListStock;
 import com.yerti.stockmarket.messages.Command;
 import com.yerti.stockmarket.placeholders.StockPlaceholder;
-import com.yerti.stockmarket.stocks.Stock;
 import com.yerti.stockmarket.stocks.StockManager;
 import com.yerti.stockmarket.threads.StockMarketEventThread;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -35,7 +36,6 @@ public class StockMarket extends JavaPlugin {
     private Logger log = Logger.getLogger("StockMarket");
     private StockMarketEventThread e;
 
-    //INSTANCES
     private static StockMarket instance;
     private static MySQL mySQL;
     public List<UUID> toggledUsers;
