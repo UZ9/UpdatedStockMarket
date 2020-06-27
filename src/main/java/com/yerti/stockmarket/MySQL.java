@@ -1,6 +1,5 @@
 package com.yerti.stockmarket;
 
-import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 
 import java.sql.*;
@@ -17,7 +16,6 @@ public class MySQL {
         String mysqlDB = plugin.getConfig().getString("mysql.database");
         String mysqlUser = plugin.getConfig().getString("mysql.username");
         String mysqlPW = plugin.getConfig().getString("mysql.password");
-
 
 
         final String driver = "com.mysql.jdbc.Driver";

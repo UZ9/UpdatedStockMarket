@@ -1,18 +1,12 @@
 package com.yerti.stockmarket.core.entity;
 
-import org.bukkit.Effect;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 
-import javax.swing.text.html.parser.Entity;
-
 public class CustomEntity {
 
     LivingEntity entity;
-
-
-
 
 
     public CustomEntity(LivingEntity entity, ItemStack[] armor, ItemStack hand, int health, PotionEffect[] effects) {

@@ -32,18 +32,25 @@ public class StockMarket extends JavaPlugin {
     public static int maxPerPlayerPerStock = 50;
     public static boolean broadcastEvents = true;
     public static boolean debugMode = false;
+    private static StockMarket instance;
+    private static MySQL mySQL;
+    public List<UUID> toggledUsers;
     private StockManager stockManager;
     private Logger log = Logger.getLogger("StockMarket");
     private StockMarketEventThread e;
 
-    private static StockMarket instance;
-    private static MySQL mySQL;
-    public List<UUID> toggledUsers;
+    public static StockMarket getInstance() {
+        return instance;
+    }
+
+    public static MySQL getMySQL() {
+        return mySQL;
+    }
 
     public void onDisable() {
 
         if (toggledUsers != null)
-        getConfig().set("toggled-users", toggledUsers);
+            getConfig().set("toggled-users", toggledUsers);
 
         try {
             e.finish();
@@ -54,13 +61,9 @@ public class StockMarket extends JavaPlugin {
         try {
             stockManager.saveStocks();
         } catch (SQLException ex) {
-            getLogger().log(Level.SEVERE,  "Failed to save stock data");
+            getLogger().log(Level.SEVERE, "Failed to save stock data");
             ex.printStackTrace();
         }
-    }
-
-    public static StockMarket getInstance() {
-        return instance;
     }
 
     private void disablePlugin() {
@@ -69,8 +72,6 @@ public class StockMarket extends JavaPlugin {
 
     public void onEnable() {
         instance = this;
-
-
 
         checkAPI();
         setupVault();
@@ -108,7 +109,7 @@ public class StockMarket extends JavaPlugin {
             } catch (SQLException ex) {
                 ex.printStackTrace();
             }
-        }, 20L,20L * 60L * 5L); // 5 minutes
+        }, 20L, 20L * 60L * 5L); // 5 minutes
 
         //new StockGraph(null).generateGraph();
 
@@ -117,7 +118,6 @@ public class StockMarket extends JavaPlugin {
     void loadConfiguration() {
         getConfig().options().copyDefaults(true);
         saveConfig();
-
 
 
         randomEventFreq = getConfig().getInt("random-event-frequency");
@@ -216,11 +216,6 @@ public class StockMarket extends JavaPlugin {
             log.info("[StockMarket] PlaceholderAPI not found, disabling placeholder.");
         }
     }
-
-    public static MySQL getMySQL() {
-        return mySQL;
-    }
-
 
     public StockManager getStockManager() {
         return stockManager;

@@ -2,18 +2,19 @@ package com.yerti.stockmarket.graphs;
 
 import com.yerti.stockmarket.api.StockMarketAPI;
 import com.yerti.stockmarket.stocks.Stock;
-
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.knowm.xchart.BitmapEncoder;
 import org.knowm.xchart.XYChart;
-import org.knowm.xchart.XYChartBuilder;
 import org.knowm.xchart.XYSeries;
 import org.knowm.xchart.style.markers.SeriesMarkers;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class StockGraph {
 

@@ -18,7 +18,7 @@ public class StockPlaceholder extends PlaceholderExpansion {
     }
 
     @Override
-    public boolean canRegister(){
+    public boolean canRegister() {
         return true;
     }
 
@@ -39,7 +39,7 @@ public class StockPlaceholder extends PlaceholderExpansion {
     }
 
     @Override
-    public String onRequest(OfflinePlayer player,  String identifier) {
+    public String onRequest(OfflinePlayer player, String identifier) {
         if (identifier.startsWith("stock_")) {
             for (Stock stock : StockMarket.getInstance().getStockManager().getStocks()) {
                 if (stock.getName().equalsIgnoreCase(identifier.substring(6))) {

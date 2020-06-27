@@ -1,7 +1,5 @@
 package com.yerti.stockmarket.core.menus;
 
-import javafx.beans.property.ReadOnlyBooleanWrapper;
-
 public enum Size {
 
 

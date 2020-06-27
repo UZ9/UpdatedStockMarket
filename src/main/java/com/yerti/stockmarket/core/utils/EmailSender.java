@@ -1,7 +1,5 @@
 package com.yerti.stockmarket.core.utils;
 
-import com.avaje.ebean.validation.Email;
-
 import javax.mail.Authenticator;
 import javax.mail.Message;
 import javax.mail.Session;

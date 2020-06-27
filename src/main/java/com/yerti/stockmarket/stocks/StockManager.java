@@ -137,7 +137,7 @@ public class StockManager {
                 sql.execute(stmt);
 
                 check.close();
-                resultSet.close();;
+                resultSet.close();
             }
 
 

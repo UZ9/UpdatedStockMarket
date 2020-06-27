@@ -4,16 +4,11 @@ package com.yerti.stockmarket.stocks;
 import com.yerti.stockmarket.MySQL;
 import com.yerti.stockmarket.StockMarket;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.util.concurrent.ThreadLocalRandom;
-
-import static com.yerti.stockmarket.api.StockMarketAPI.retrieveStocks;
 
 public class Stock {
 
@@ -160,7 +155,7 @@ public class Stock {
         return d;
     }
 
-    public boolean set (String name, String stockID, long baseprice, long maxprice, long minprice, double volatility, int amount, double dividend, double lastPercent) {
+    public boolean set(String name, String stockID, long baseprice, long maxprice, long minprice, double volatility, int amount, double dividend, double lastPercent) {
 
         Bukkit.getScheduler().runTaskAsynchronously(StockMarket.getInstance(), () -> {
             MySQL mysql = new MySQL(StockMarket.getInstance());
@@ -194,7 +189,6 @@ public class Stock {
 
         return true;
     }
-
 
 
     public double getLastPercent() {
@@ -256,7 +250,6 @@ public class Stock {
     public double getDividend() {
         return this.dividend;
     }
-
 
 
 }

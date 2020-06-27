@@ -16,7 +16,6 @@ public class CustomInventory implements InventoryHolder {
     private ItemStack footerItem;
 
 
-
     public CustomInventory(InventoryHolder holder, int slots, String displayName, ItemStack backgroundItem) {
         this.slots = slots;
         this.displayName = displayName;

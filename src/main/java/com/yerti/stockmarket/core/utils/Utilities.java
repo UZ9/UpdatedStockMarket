@@ -1,7 +1,6 @@
 package com.yerti.stockmarket.core.utils;
 
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 public class Utilities {
@@ -19,16 +18,14 @@ public class Utilities {
             //Itemstack is Material.AIR
             if (currentItemStack == null) {
                 freeSpace += itemStack.getMaxStackSize();
-            //Item has same item meta
+                //Item has same item meta
             } else if (currentItemStack.isSimilar(itemStack)) {
                 freeSpace += itemStack.getMaxStackSize() - currentItemStack.getAmount();
             }
 
         }
 
-        if (freeSpace >= itemStack.getAmount()) return true;
-
-        return false;
+        return freeSpace >= itemStack.getAmount();
     }
 
     public static boolean hasOpenSlots(Player player, int slots) {
@@ -45,10 +42,6 @@ public class Utilities {
 
         return freeSlots >= slots;
     }
-
-
-
-
 
 
 }

@@ -22,15 +22,15 @@ import java.util.*;
 
 public class MenuListStock implements IInventory {
 
+    private static Plugin plugin;
+    private static Map<Player, Integer> currentPage;
     private Player player;
     private Map<UUID, Long> buyTime = new HashMap<>();
     private Map<ItemStack, Stock> stockItems;
     private Map<String, Stock> stockIDs = new HashMap<>();
-    private static Plugin plugin;
-    private static Map<Player, Integer> currentPage;
 
     public MenuListStock(Plugin plugin) {
-        this.plugin = plugin;
+        MenuListStock.plugin = plugin;
     }
 
     public MenuListStock(Player player) {
@@ -78,14 +78,14 @@ public class MenuListStock implements IInventory {
             lore.add(ChatColor.GRAY + "Last Price Change:");
             lore.add(ChatColor.DARK_GRAY + "\u00BB " + format.format(percentFormatted));
             lore.add("");
-            lore.add(ChatColor.DARK_GRAY + "\u00BB " + ChatColor.GRAY + "S. Alt Click " + ChatColor.DARK_GRAY + "\u00BB "  + ChatColor.RED + "Buy 100");
+            lore.add(ChatColor.DARK_GRAY + "\u00BB " + ChatColor.GRAY + "S. Alt Click " + ChatColor.DARK_GRAY + "\u00BB " + ChatColor.RED + "Buy 100");
             lore.add(ChatColor.DARK_GRAY + "\u00BB " + ChatColor.GRAY + "S. Left Click " + ChatColor.DARK_GRAY + "\u00BB " + ChatColor.RED + "Buy 10");
-            lore.add(ChatColor.DARK_GRAY + "\u00BB " + ChatColor.GRAY + "Left Click " + ChatColor.DARK_GRAY + "\u00BB "  + ChatColor.RED + "Buy 1");
+            lore.add(ChatColor.DARK_GRAY + "\u00BB " + ChatColor.GRAY + "Left Click " + ChatColor.DARK_GRAY + "\u00BB " + ChatColor.RED + "Buy 1");
 
             lore.add("");
-            lore.add(ChatColor.DARK_GRAY + "\u00BB " + ChatColor.GRAY + "S. Alt Right Click " + ChatColor.DARK_GRAY + "\u00BB "  + ChatColor.RED + "Sell 100");
+            lore.add(ChatColor.DARK_GRAY + "\u00BB " + ChatColor.GRAY + "S. Alt Right Click " + ChatColor.DARK_GRAY + "\u00BB " + ChatColor.RED + "Sell 100");
             lore.add(ChatColor.DARK_GRAY + "\u00BB " + ChatColor.GRAY + "S. Right Click " + ChatColor.DARK_GRAY + "\u00BB " + ChatColor.RED + "Sell 10");
-            lore.add(ChatColor.DARK_GRAY + "\u00BB " + ChatColor.GRAY + "Right Click " + ChatColor.DARK_GRAY + "\u00BB "  + ChatColor.RED + "Sell 1");
+            lore.add(ChatColor.DARK_GRAY + "\u00BB " + ChatColor.GRAY + "Right Click " + ChatColor.DARK_GRAY + "\u00BB " + ChatColor.RED + "Sell 1");
 
             lore.add(ChatColor.DARK_GRAY + "" + ChatColor.STRIKETHROUGH + "----------------------");
 
@@ -146,67 +146,65 @@ public class MenuListStock implements IInventory {
     }
 
 
-        @Override
-        public void onGUI(Player player, int slot, ItemStack clickedItem, InventoryClickEvent event) {
-            event.setCancelled(true);
-            if (clickedItem == null) return;
-            if (clickedItem.getType().equals(Material.EMERALD)) {
+    @Override
+    public void onGUI(Player player, int slot, ItemStack clickedItem, InventoryClickEvent event) {
+        event.setCancelled(true);
+        if (clickedItem == null) return;
+        if (clickedItem.getType().equals(Material.EMERALD)) {
 
-                final Runnable runnable = () -> player.getOpenInventory().getTopInventory().setContents(getInventory().getContents());
-                if (event.getClick().equals(ClickType.LEFT) || event.getClick().equals(ClickType.SHIFT_LEFT)) {
+            final Runnable runnable = () -> player.getOpenInventory().getTopInventory().setContents(getInventory().getContents());
+            if (event.getClick().equals(ClickType.LEFT) || event.getClick().equals(ClickType.SHIFT_LEFT)) {
 
-                    if (buyTime.containsKey(player.getUniqueId())) {
-                        if ((buyTime.get(player.getUniqueId()) / 1000.) + 0.5 - (System.currentTimeMillis() / 1000.) > 0) {
-                            new Message(player).errorMessage("You must wait a bit before performing that action  again.");
-                            return;
-                        }
+                if (buyTime.containsKey(player.getUniqueId())) {
+                    if ((buyTime.get(player.getUniqueId()) / 1000.) + 0.5 - (System.currentTimeMillis() / 1000.) > 0) {
+                        new Message(player).errorMessage("You must wait a bit before performing that action  again.");
+                        return;
                     }
-
-
-                    Stock stock = stockIDs.get(ChatColor.stripColor(clickedItem.getItemMeta().getDisplayName()));
-                    //Stock stock = stockItems.get(clickedItem);
-
-                    int amountToBuy = event.isShiftClick() ? 10 : 1;
-
-                    StockMarket.getInstance().getStockManager().buy(player, stock, amountToBuy);
-
-                    event.setCancelled(true);
-                    //Give 3 ticks for mysql in async thread to be written
-                    Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, runnable, 3L);
-                    buyTime.put(player.getUniqueId(), System.currentTimeMillis());
-                    return;
-
-                    
                 }
 
-                if (event.getClick().equals(ClickType.RIGHT) || event.getClick().equals(ClickType.SHIFT_RIGHT)) {
 
-                    if (buyTime.containsKey(player.getUniqueId())) {
-                        if ((buyTime.get(player.getUniqueId()) / 1000.) + 0.5 - (System.currentTimeMillis() / 1000.) > 0) {
-                            new Message(player).errorMessage("You must wait a bit before performing that action  again.");
-                            return;
-                        }
-                    }
+                Stock stock = stockIDs.get(ChatColor.stripColor(clickedItem.getItemMeta().getDisplayName()));
+                //Stock stock = stockItems.get(clickedItem);
 
-                    Stock stock = stockItems.get(clickedItem);
+                int amountToBuy = event.isShiftClick() ? 10 : 1;
 
-                    int amountToBuy = event.isShiftClick() ? 10 : 1;
+                StockMarket.getInstance().getStockManager().buy(player, stock, amountToBuy);
 
-                    StockMarket.getInstance().getStockManager().sell(player, stock, amountToBuy);
-
-                    event.setCancelled(true);
-                    //Give 3 ticks for mysql in async thread to be written
-                    Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, runnable, 3L);
-                    buyTime.put(player.getUniqueId(), System.currentTimeMillis());
-
-                }
+                event.setCancelled(true);
+                //Give 3 ticks for mysql in async thread to be written
+                Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, runnable, 3L);
+                buyTime.put(player.getUniqueId(), System.currentTimeMillis());
+                return;
 
 
             }
 
+            if (event.getClick().equals(ClickType.RIGHT) || event.getClick().equals(ClickType.SHIFT_RIGHT)) {
+
+                if (buyTime.containsKey(player.getUniqueId())) {
+                    if ((buyTime.get(player.getUniqueId()) / 1000.) + 0.5 - (System.currentTimeMillis() / 1000.) > 0) {
+                        new Message(player).errorMessage("You must wait a bit before performing that action  again.");
+                        return;
+                    }
+                }
+
+                Stock stock = stockItems.get(clickedItem);
+
+                int amountToBuy = event.isShiftClick() ? 10 : 1;
+
+                StockMarket.getInstance().getStockManager().sell(player, stock, amountToBuy);
+
+                event.setCancelled(true);
+                //Give 3 ticks for mysql in async thread to be written
+                Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, runnable, 3L);
+                buyTime.put(player.getUniqueId(), System.currentTimeMillis());
+
+            }
+
+
         }
 
-
+    }
 
 
 }

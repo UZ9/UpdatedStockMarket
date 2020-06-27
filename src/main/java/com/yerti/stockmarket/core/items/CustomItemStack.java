@@ -22,23 +22,11 @@ public class CustomItemStack extends ItemStack {
     }
 
 
-
     public CustomItemStack(Material type, int amount, String displayName, boolean glowing, String... lore) {
         this(type, amount, displayName, glowing);
 
         ItemMeta meta = getItemMeta();
         meta.setLore(Arrays.asList(lore));
-    }
-
-    public CustomItemStack lore(String text) {
-        ItemMeta meta = getItemMeta();
-        List<String> lore = meta.getLore();
-        if (lore == null) lore = new ArrayList<>();
-        lore.add(ChatColor.translateAlternateColorCodes('&', text));
-        meta.setLore(lore);
-        setItemMeta(meta);
-
-        return this;
     }
 
     public CustomItemStack(Material type, int amount, String displayName, boolean glowing) {
@@ -56,7 +44,6 @@ public class CustomItemStack extends ItemStack {
         ItemStack stack = new ItemStack(Material.STONE, 3, (short) 3);
 
 
-
         if (glowing) {
 
             meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
@@ -69,6 +56,17 @@ public class CustomItemStack extends ItemStack {
         }
     }
 
+    public CustomItemStack lore(String text) {
+        ItemMeta meta = getItemMeta();
+        List<String> lore = meta.getLore();
+        if (lore == null) lore = new ArrayList<>();
+        lore.add(ChatColor.translateAlternateColorCodes('&', text));
+        meta.setLore(lore);
+        setItemMeta(meta);
+
+        return this;
+    }
+
     public ItemStack getStack() {
         return this;
     }
@@ -76,9 +74,6 @@ public class CustomItemStack extends ItemStack {
     public String getDisplayName() {
         return getItemMeta().getDisplayName();
     }
-
-
-
 
 
 }

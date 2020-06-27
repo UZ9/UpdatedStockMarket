@@ -6,12 +6,12 @@ import org.bukkit.ChatColor;
 
 import java.text.DecimalFormat;
 import java.util.List;
-import java.util.UUID;
 
 public class StockMarketAPI {
 
     /**
      * Fetches all of the current stocks that are created
+     *
      * @return list of all current stocks
      */
     public static List<Stock> retrieveStocks() {
@@ -20,6 +20,7 @@ public class StockMarketAPI {
 
     /**
      * Returns a formatted message of the stocks
+     *
      * @return
      */
     public static String retrieveFormattedStock() {
@@ -42,7 +43,7 @@ public class StockMarketAPI {
                 percentFormatted = ChatColor.GREEN + percentFormatted + "%";
             }
 
-            builder.append(ChatColor.GREEN + stock.getName() + ChatColor.GRAY + " - " + ChatColor.RED + "$"  + stock.getPrice() + ChatColor.GRAY + " - " + percentFormatted + "\n");
+            builder.append(ChatColor.GREEN + stock.getName() + ChatColor.GRAY + " - " + ChatColor.RED + "$" + stock.getPrice() + ChatColor.GRAY + " - " + percentFormatted + "\n");
 
         }
 
@@ -50,8 +51,6 @@ public class StockMarketAPI {
 
         return builder.toString();
     }
-
-
 
 
 }

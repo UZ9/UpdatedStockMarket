@@ -1,6 +1,5 @@
 package com.yerti.stockmarket.core.items;
 
-import com.google.common.collect.Lists;
 import org.bukkit.ChatColor;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -8,13 +7,13 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ItemstackModifier  {
+public class ItemstackModifier {
 
     ItemStack stack;
 
-     public ItemstackModifier(ItemStack stack) {
-         this.stack = stack;
-     }
+    public ItemstackModifier(ItemStack stack) {
+        this.stack = stack;
+    }
 
     public ItemstackModifier setDisplayName(String displayName) {
         ItemMeta meta = stack.getItemMeta();
@@ -34,7 +33,7 @@ public class ItemstackModifier  {
     }
 
     public ItemStack build() {
-         return stack;
+        return stack;
     }
 
 }

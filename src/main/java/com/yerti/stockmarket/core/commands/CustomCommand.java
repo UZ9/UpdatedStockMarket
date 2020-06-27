@@ -11,16 +11,13 @@ import java.lang.reflect.Field;
 import java.util.List;
 
 
-
-
 //Modified version of Goblom's command interface
 
 public abstract class CustomCommand implements CommandExecutor {
 
     protected static CommandMap commandMap;
-
-    String command;
     protected String usage;
+    String command;
     String description;
     String noPermMessage;
     List<String> aliases;
@@ -41,7 +38,6 @@ public abstract class CustomCommand implements CommandExecutor {
     public CustomCommand(String command, String usage, String description, String noPermMessage, String permission) {
         this(command, usage, description, noPermMessage, permission, null);
     }
-
 
 
     public CustomCommand(String command, String usage, String description, String permission, List<String> aliases) {
@@ -94,9 +90,11 @@ public abstract class CustomCommand implements CommandExecutor {
         return getCommandMap();
     }
 
+    public abstract boolean onCommand(CommandSender sender, Command cmd, String label, String[] args);
 
     private final class Reflection extends Command {
         private CustomCommand customCommand = null;
+
         protected Reflection(String name) {
             super(name);
         }
@@ -123,9 +121,6 @@ public abstract class CustomCommand implements CommandExecutor {
         }
 
     }
-
-    public abstract boolean onCommand(CommandSender sender, Command cmd, String label, String[] args);
-
 
 
 }

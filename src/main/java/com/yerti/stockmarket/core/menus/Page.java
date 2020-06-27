@@ -1,12 +1,14 @@
 package com.yerti.stockmarket.core.menus;
 
-import com.yerti.stockmarket.core.items.CustomItemStack;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class Page {
 
